@@ -24,7 +24,8 @@ RUN composer install --no-dev --no-interaction --optimize-autoloader --no-script
 
 COPY nginx-railway.conf.template /etc/nginx/templates/default.conf.template
 COPY entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
+    && rm -f /etc/nginx/sites-enabled/default
 
 EXPOSE 8080
 
