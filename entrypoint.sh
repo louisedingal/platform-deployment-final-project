@@ -1,0 +1,17 @@
+#!/bin/bash
+set -e
+
+echo "Starting PHP-FPM..."
+php-fpm &
+
+PHP_PID=$!
+
+echo "Waiting for PHP-FPM to start..."
+sleep 2
+
+echo "Starting Nginx..."
+nginx -g "daemon off;" &
+
+NGINX_PID=$!
+
+wait $PHP_PID
