@@ -10,7 +10,8 @@ RUN apt-get update && apt-get install -y \
     curl \
     zlib1g-dev \
     libzip-dev \
-    && docker-php-ext-install pdo pdo_mysql \
+    libicu-dev \
+    && docker-php-ext-install pdo pdo_mysql intl \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
@@ -49,11 +50,16 @@ FROM php:8.3-fpm AS runtime
 
 WORKDIR /app
 
+# Pass Railway env vars into PHP-FPM workers
+RUN sed -i 's/;clear_env = no/clear_env = no/' /usr/local/etc/php-fpm.d/www.conf
+
 # Install required runtime packages and PHP extensions
 RUN apt-get update && apt-get install -y \
     nginx \
     curl \
-    && docker-php-ext-install pdo pdo_mysql \
+    gettext-base \
+    libicu-dev \
+    && docker-php-ext-install pdo pdo_mysql intl \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy application files from builder stage
@@ -73,8 +79,9 @@ RUN rm -rf /etc/nginx/conf.d/* \
     /etc/nginx/sites-enabled/* \
     /etc/nginx/sites-available/*
 
-# Copy custom Nginx server block
+# Copy custom Nginx server block (local) and Railway template
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx-railway.conf.template /etc/nginx/templates/default.conf.template
 
 # Copy Docker entrypoint script
 COPY entrypoint.sh /usr/local/bin/docker-entrypoint.sh
