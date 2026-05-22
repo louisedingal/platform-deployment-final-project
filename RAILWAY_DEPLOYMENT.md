@@ -55,6 +55,7 @@ railway up
 
 ## Troubleshooting
 
+- **`vendor/autoload_runtime.php` missing:** Ensure **Settings → Build** uses **Dockerfile** (not Nixpacks). Do **not** mount a volume on `/var/www` for the app service (it hides the built `vendor/` folder).
 - **502 / app not responding:** Ensure `PORT` is used (nginx template) and PHP-FPM uses `127.0.0.1:9000`.
-- **Database connection failed:** Link MySQL to the app service and set `DATABASE_URL`.
+- **Database connection failed:** On the **app** service Variables, add `DATABASE_URL` = `${{MySQL.MYSQL_URL}}` (use **Variable Reference** from your MySQL service).
 - **Migrations failed:** Check deploy logs; MySQL must be running before the app starts (entrypoint waits up to 60s).

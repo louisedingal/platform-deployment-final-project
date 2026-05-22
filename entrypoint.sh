@@ -1,8 +1,26 @@
 #!/bin/sh
+set -e
 
-if [ ! -f vendor/autoload.php ]; then
-    composer install --no-dev --no-scripts --no-interaction
-fi
+ensure_vendor() {
+    if [ -f vendor/autoload_runtime.php ]; then
+        return 0
+    fi
+
+    echo "Installing Composer dependencies..."
+    if [ ! -f composer.json ]; then
+        echo "FATAL: composer.json missing — check Railway root directory and volume mounts."
+        exit 1
+    fi
+
+    composer install --no-dev --no-interaction --optimize-autoloader --no-scripts
+
+    if [ ! -f vendor/autoload_runtime.php ]; then
+        echo "FATAL: vendor/autoload_runtime.php still missing after composer install."
+        exit 1
+    fi
+}
+
+ensure_vendor
 
 mkdir -p var/cache var/log
 chown -R www-data:www-data var
@@ -48,7 +66,7 @@ run_setup() {
     echo "Background setup complete."
 }
 
-# Railway: start nginx immediately so healthchecks pass, setup runs in background
+# Railway: start nginx only after vendor exists
 if [ -n "${PORT}" ]; then
     export PORT
     envsubst '${PORT}' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf
