@@ -1,4 +1,8 @@
 
+###> railway ###
+/.railway/
+###< railway ###
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.dev

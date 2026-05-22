@@ -114,6 +114,10 @@ Recommended platform:
 
 - Railway
 
+## Deployment (Railway)
+
+See the Railway-specific deployment guide: [RAILWAY_DEPLOYMENT.md](RAILWAY_DEPLOYMENT.md)
+
 ## Notes
 
 This project is intended for educational purposes and demonstrates full-stack containerized deployment practices using Symfony.
